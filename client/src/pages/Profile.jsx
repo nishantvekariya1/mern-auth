@@ -16,6 +16,7 @@ export default function Profile() {
   const [formData, setFormData] = useState({});
 
   const { currentUser } = useSelector((state) => state.user);
+
   useEffect(() => {
     if (image) {
       handleFileUpload(image);
@@ -27,6 +28,7 @@ export default function Profile() {
     const fileName = new Date().getTime() + image.name;
     const storageRef = ref(storage, fileName);
     const uploadTask = uploadBytesResumable(storageRef, image);
+
     uploadTask.on(
       "state_changed",
       (snapshot) => {
@@ -39,7 +41,7 @@ export default function Profile() {
       },
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          setFormData({ ...formData, profilePicture, downloadURL });
+          setFormData({ ...formData, downloadURL }); 
         });
       }
     );
@@ -57,14 +59,14 @@ export default function Profile() {
           onChange={(e) => setImage(e.target.files[0])}
         />
         <img
-          src={currentUser.profilePicture}
+          src={formData.downloadURL || currentUser.profilePicture}
           alt="profile"
           className="h-24 w-24 self-center cursor-pointer rounded-full object-cover mt-2"
           onClick={() => fileRef.current.click()}
         />
         <p className="text-sm self-center">
           {imageError ? (
-            <span className="text-red-700">Error uploading image (file sizemust be less than 2 Mb)</span>
+            <span className="text-red-700">Error uploading image (file size must be less than 2 Mb)</span>
           ) : imagePercent > 0 && imagePercent < 100 ? (
             <span className="text-slate-700">{`Uploading : ${imagePercent} %`}</span>
           ) : imagePercent === 100 ? (

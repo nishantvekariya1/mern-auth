@@ -15,7 +15,7 @@ import {
   deleteUserStart,
   deleteUserSuccess,
   deleteUserFailure,
-  signOut
+  signOut,
 } from "../redux/user/userSlice";
 
 export default function Profile() {
@@ -53,7 +53,7 @@ export default function Profile() {
       },
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          setFormData({ ...formData, downloadURL });
+          setFormData({ ...formData, profilePicture: downloadURL });
         });
       }
     );
@@ -105,13 +105,15 @@ export default function Profile() {
 
   const handleSignout = async () => {
     try {
-      const res = await fetch('/api/auth/signout');
+      const res = await fetch("/api/auth/signout");
       dispatch(signOut());
-
     } catch (error) {
-      console.log(error); 
+      console.log(error);
     }
   };
+
+  console.log("Current user ::: ", currentUser);
+  console.log("formdata user ::: ", formData);
 
   return (
     <div className="p-3 max-w-lg mx-auto">
@@ -125,7 +127,7 @@ export default function Profile() {
           onChange={(e) => setImage(e.target.files[0])}
         />
         <img
-          src={formData.profilePicture || currentUser.profilePicture}
+          src={formData.downloadURL || currentUser.profilePicture}
           alt="profile"
           className="h-24 w-24 self-center cursor-pointer rounded-full object-cover mt-2"
           onClick={() => fileRef.current.click()}
@@ -174,7 +176,9 @@ export default function Profile() {
         <span onClick={handleDelete} className="text-red-700 cursor-pointer">
           Delete Account
         </span>
-        <span onClick={handleSignout} className="text-red-700 cursor-pointer">Sign out</span>
+        <span onClick={handleSignout} className="text-red-700 cursor-pointer">
+          Sign out
+        </span>
       </div>
       <p className="text-red-700 mt-5">{error && "Something went wrong!"}</p>
       <p className="text-green-700 mt-5">
